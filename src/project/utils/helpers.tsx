@@ -2,10 +2,8 @@ import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-
 import { Dayjs } from "dayjs";
-import { DisabledDays } from "./interfaces";
-import { FunctionComponentFactory } from "react";
+import { DisabledDays, FunctionParameters, ICalendarCell } from "./interfaces";
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -21,14 +19,6 @@ export function changeDateMonth(date: Dayjs, isNextMonth: boolean): Dayjs {
     return date.set("year", date.year() + 1).set("month", 0);
   }
   return date.add(isNextMonth ? 1 : -1, "month");
-}
-
-export interface ICalendarCell {
-  text: string;
-  value: Dayjs;
-  isDisabled: boolean;
-  isInThisMonth: boolean;
-  activate?: boolean;
 }
 
 export function checkDaysIsInMonth(dayConstant: Dayjs, date: Dayjs) {
@@ -50,37 +40,32 @@ const prepareCell = (
     isInThisMonth: checkDaysIsInMonth(dayConstant, date),
   };
 };
-export interface functionParameters {
-  notAvailableDays?: Array<DisabledDays>;
-  min?: string;
-  max?: string;
-}
+
 export function getCalendarRows(
-  date: Dayjs,
-  ...rest: any
+  newConstants: FunctionParameters
 ): Array<ICalendarCell> {
-  console.log(rest);
-  const newConstants = rest[0];
+  const { shownDate, max, min, notAvailableDays } = newConstants;
   let rows: Array<ICalendarCell> = [];
-  let daysInMonth: Dayjs = date.startOf("month").startOf("week");
-  let endDaysInMonth: Dayjs = date.endOf("month").endOf("week");
+  let daysInMonth: Dayjs = shownDate.startOf("month").startOf("week");
+  let endDaysInMonth: Dayjs = shownDate.endOf("month").endOf("week");
   const differents: number = endDaysInMonth.diff(daysInMonth, "day");
   for (let i = 0; i <= differents; i++) {
-    rows.push(prepareCell(daysInMonth, +daysInMonth.format("D"), false, date));
+    rows.push(
+      prepareCell(daysInMonth, +daysInMonth.format("D"), false, shownDate)
+    );
     daysInMonth = daysInMonth.add(1, "day");
   }
 
-  if (newConstants.notAvailableDays && newConstants.notAvailableDays.length > 0) {
-    rows = addNotActivatedDate(rows, newConstants.notAvailableDays);
+  if (notAvailableDays && notAvailableDays.length > 0) {
+    rows = addNotActivatedDate(rows, notAvailableDays);
   }
 
-  if (newConstants.max && typeof newConstants.max === "string") {
-    rows = disableDaysAfterThisDate(rows, newConstants.max);
+  if (max && typeof max === "string") {
+    rows = disableDaysAfterThisDate(rows, max);
   }
-  if (newConstants.min && typeof newConstants.min === "string") {
-    rows = disableDaysBeforeThisDate(rows, newConstants.min);
+  if (min && typeof min === "string") {
+    rows = disableDaysBeforeThisDate(rows, min);
   }
-  // console.log(rows);
   return rows;
 }
 

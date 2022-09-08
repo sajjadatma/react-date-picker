@@ -1,22 +1,19 @@
 import React from "react";
-import { Dayjs } from "dayjs";
-
+import { TriggerTitle } from "./styles";
 import { ChevronDownIcon } from "../../../icons";
 import { changeDateMonth } from "../../../utils/helpers";
 
 import "./style.css";
 import clsx from "clsx";
-
-export interface IDatePickerSelectorProps {
-  shownDate: Dayjs;
-  selectorDateFormat?: string;
-  setShownDate: React.Dispatch<React.SetStateAction<Dayjs>>;
-}
+import { IDatePickerSelectorProps } from "../../../utils/interfaces";
+import { CustomStyles } from "../../../utils/interfaces-styles";
 
 export const DatePickerSelector: React.FC<IDatePickerSelectorProps> = ({
   shownDate,
   setShownDate,
+  ...rest
 }) => {
+  const { triggerTitle } = rest.customStyles as CustomStyles;
   const handleIconClick = (isNextMonth: boolean) => {
     return () => {
       setShownDate(changeDateMonth(shownDate, isNextMonth));
@@ -36,7 +33,9 @@ export const DatePickerSelector: React.FC<IDatePickerSelectorProps> = ({
       </div>
 
       <div className={"DatePickerSelector__date"}>
-        {shownDate.format("MMMM YYYY")}
+        <TriggerTitle {...triggerTitle}>
+          {shownDate.format("MMMM YYYY")}
+        </TriggerTitle>
       </div>
 
       <div

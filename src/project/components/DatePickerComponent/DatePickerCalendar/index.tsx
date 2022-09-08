@@ -4,23 +4,22 @@ import clsx from "clsx";
 
 import { getCalendarRows, daysOfWeek } from "../../../utils/helpers";
 import "./style.css";
-export interface IDatePickerCalendarProps {
-  shownDate: Dayjs;
-  selectedDate: Dayjs;
-  onChange: (newDate: Dayjs) => void;
-}
+import { IDatePickerCalendarProps } from "./DatePickerCalendar-interfaces";
 
 export const DatePickerCalendar: React.FC<IDatePickerCalendarProps> = ({
-  shownDate,
   selectedDate,
   onChange,
   ...rest
 }) => {
+  const { notAvailableDays, min, max, shownDate } = rest;
   const handleSelectDate = (value: Dayjs) => {
     return () => onChange(value);
   };
 
-  const rows = useMemo(() => getCalendarRows(shownDate, rest), [shownDate]);
+  const rows = useMemo(
+    () => getCalendarRows({ shownDate, notAvailableDays, min, max }),
+    [shownDate]
+  );
 
   return (
     <>

@@ -1,21 +1,11 @@
 import React, { useState } from "react";
 
-import type { Dayjs } from "dayjs";
 
 import { DatePickerCalendar } from "./DatePickerCalendar";
 import { DatePickerSelector } from "./DatePickerSelector";
 
 import "./style.css";
-import { DisabledDays } from "../../utils/interfaces";
-
-export interface IDatePickerProps {
-  selectedDate: Dayjs;
-  selectorDateFormat?: string;
-  notAvailableDays?: Array<DisabledDays>;
-  min?: string;
-  max?: string;
-  onChange: (newDate: Dayjs) => void;
-}
+import {  IDatePickerProps } from "./DatePickerComponent-interfaces";
 
 export const DatePickerComponent: React.FC<IDatePickerProps> = ({
   selectedDate,
@@ -31,6 +21,7 @@ export const DatePickerComponent: React.FC<IDatePickerProps> = ({
         shownDate={shownDate}
         selectorDateFormat={selectorDateFormat}
         setShownDate={setShownDate}
+        {...rest}
       />
 
       <DatePickerCalendar

@@ -10,9 +10,19 @@ function App() {
   ];
   const min: string = "2022-09-05";
   const max: string = "2022-09-20";
+
+  const customStyles = {
+    triggerTitle: {
+      color: "red",
+      fontSize:"20px",
+    },
+  };
   return (
     <div className="App">
-      <DatePicker notAvailableDays={notAvailableDays} />
+      <DatePicker
+        notAvailableDays={notAvailableDays}
+        customStyles={customStyles}
+      />
     </div>
   );
 }

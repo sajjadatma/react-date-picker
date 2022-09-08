@@ -4,6 +4,7 @@ import jalaliday from "jalaliday";
 import { useState } from "react";
 import { DatePickerComponent } from "./components/DatePickerComponent";
 import { DisabledDays } from "./utils/interfaces";
+import { CustomStyles } from "./utils/interfaces-styles";
 dayjs.extend(jalaliday);
 dayjs.locale("fa");
 
@@ -11,6 +12,7 @@ export interface IAppProps {
   notAvailableDays?: Array<DisabledDays>;
   min?: string;
   max?: string;
+  customStyles?: CustomStyles;
 }
 export const DatePicker: React.FC<IAppProps> = ({ ...rest }) => {
   const [date, setDate] = useState(now());
