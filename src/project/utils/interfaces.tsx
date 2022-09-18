@@ -18,3 +18,7 @@ export interface FunctionParameters {
   min?: string;
   max?: string;
 }
+export interface ResultOfStartDate {
+  difference: number;
+  firstDay: Dayjs;
+}

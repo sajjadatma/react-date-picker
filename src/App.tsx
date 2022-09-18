@@ -1,6 +1,7 @@
 import "./App.css";
 import DatePicker from "./project/index";
 import { DisabledDays } from "./project/utils/interfaces";
+import FakeComponent from './fakeComponent'
 function App() {
   const notAvailableDays: Array<DisabledDays> = [
     { disabledDate: "2022/09/05", description: "1st Holiday" },
@@ -14,7 +15,7 @@ function App() {
   const customStyles = {
     triggerTitle: {
       color: "red",
-      fontSize:"20px",
+      fontSize: "20px",
     },
   };
   return (
@@ -22,6 +23,7 @@ function App() {
       <DatePicker
         notAvailableDays={notAvailableDays}
         customStyles={customStyles}
+        // Component={FakeComponent}
       />
     </div>
   );

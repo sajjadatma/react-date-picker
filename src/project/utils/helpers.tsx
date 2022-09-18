@@ -3,7 +3,7 @@ import isBetween from "dayjs/plugin/isBetween";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { Dayjs } from "dayjs";
-import { DisabledDays, FunctionParameters, ICalendarCell } from "./interfaces";
+import { DisabledDays, FunctionParameters, ICalendarCell, ResultOfStartDate } from "./interfaces";
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -46,14 +46,12 @@ export function getCalendarRows(
 ): Array<ICalendarCell> {
   const { shownDate, max, min, notAvailableDays } = newConstants;
   let rows: Array<ICalendarCell> = [];
-  let daysInMonth: Dayjs = shownDate.startOf("month").startOf("week");
-  let endDaysInMonth: Dayjs = shownDate.endOf("month").endOf("week");
-  const differents: number = endDaysInMonth.diff(daysInMonth, "day");
-  for (let i = 0; i <= differents; i++) {
-    rows.push(
-      prepareCell(daysInMonth, +daysInMonth.format("D"), false, shownDate)
-    );
-    daysInMonth = daysInMonth.add(1, "day");
+  const startDayTrigger = startDate(shownDate, false);
+  const { difference, firstDay } = startDayTrigger;
+  let firstDayOfRow = firstDay;
+  for (let i = 0; i <= difference; i++) {
+    rows.push(prepareCell(firstDayOfRow, +firstDayOfRow.format("D"), false, shownDate));
+    firstDayOfRow = firstDayOfRow.add(1, "day");
   }
 
   if (notAvailableDays && notAvailableDays.length > 0) {
@@ -109,4 +107,22 @@ export const disableDaysBeforeThisDate = (
         : true,
   }));
   return newDays;
+};
+
+
+const startDate = (date: Dayjs, startDateFlag: boolean) => {
+  const firstDayOfMonth = date.startOf("month");
+  const lastDayOfMonth = date.endOf("month");
+  const firstSaturdayOfMonth: Dayjs = firstDayOfMonth.startOf("week");
+  const lastFridayOfMonth: Dayjs = firstDayOfMonth.endOf("month").endOf("week");
+  let difference: number = lastFridayOfMonth.diff(firstSaturdayOfMonth, "day");
+  let result: ResultOfStartDate = {
+    difference,
+    firstDay: firstSaturdayOfMonth,
+  };
+  if (startDateFlag === true) {
+    difference = lastDayOfMonth.diff(firstDayOfMonth, "day");
+    result = { difference, firstDay: firstDayOfMonth };
+  }
+  return result;
 };
