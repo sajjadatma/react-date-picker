@@ -3,7 +3,13 @@ import isBetween from "dayjs/plugin/isBetween";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { Dayjs } from "dayjs";
-import { DisabledDays, FunctionParameters, ICalendarCell, ResultOfStartDate } from "./interfaces";
+
+import {
+  DisabledDays,
+  FunctionParameters,
+  ICalendarCell,
+  ResultOfStartDate,
+} from "./interfaces";
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
@@ -31,40 +37,62 @@ const prepareCell = (
   date: Dayjs,
   dayNumber: number,
   isDisabled: boolean = false,
-  dayConstant: Dayjs
+  dayConstant: Dayjs,
+  closureDay?: Array<number> | []
 ) => {
   return {
     text: String(dayNumber),
     value: date.clone().set("date", dayNumber),
     isDisabled,
     isInThisMonth: checkDaysIsInMonth(dayConstant, date),
+    closureDay:
+      closureDay && closureDay.length > 0
+        ? closureDay.some((item) => {
+            if (item === 1) {
+              return date.day() - 5 === +item;
+            } else {
+              return date.day() === +item - 2;
+            }
+          })
+        : false,
   };
 };
 
 export function getCalendarRows(
   newConstants: FunctionParameters
 ): Array<ICalendarCell> {
-  const { shownDate, max, min, notAvailableDays } = newConstants;
-  let rows: Array<ICalendarCell> = [];
+  const { shownDate, max, min, notAvailableDays, closureDay } = newConstants;
+
+  let days: Array<ICalendarCell> = [];
   const startDayTrigger = startDate(shownDate, false);
   const { difference, firstDay } = startDayTrigger;
   let firstDayOfRow = firstDay;
   for (let i = 0; i <= difference; i++) {
-    rows.push(prepareCell(firstDayOfRow, +firstDayOfRow.format("D"), false, shownDate));
+    days.push(
+      prepareCell(
+        firstDayOfRow,
+        +firstDayOfRow.format("D"),
+        false,
+        shownDate,
+        closureDay
+      )
+    );
     firstDayOfRow = firstDayOfRow.add(1, "day");
   }
 
   if (notAvailableDays && notAvailableDays.length > 0) {
-    rows = addNotActivatedDate(rows, notAvailableDays);
+    days = addNotActivatedDate(days, notAvailableDays);
   }
 
   if (max && typeof max === "string") {
-    rows = disableDaysAfterThisDate(rows, max);
+    days = disableDaysAfterThisDate(days, max);
   }
   if (min && typeof min === "string") {
-    rows = disableDaysBeforeThisDate(rows, min);
+    days = disableDaysBeforeThisDate(days, min);
   }
-  return rows;
+  console.log(days);
+
+  return days;
 }
 
 export const addNotActivatedDate = (
@@ -108,7 +136,6 @@ export const disableDaysBeforeThisDate = (
   }));
   return newDays;
 };
-
 
 const startDate = (date: Dayjs, startDateFlag: boolean) => {
   const firstDayOfMonth = date.startOf("month");

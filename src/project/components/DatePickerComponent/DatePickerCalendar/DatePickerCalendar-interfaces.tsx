@@ -9,6 +9,6 @@ export interface IDatePickerCalendarProps {
   notAvailableDays?: Array<DisabledDays>;
   min?: string;
   max?: string;
-  rows: Array<ICalendarCell>;
+  days: Array<ICalendarCell>;
   onChange: (newDate: Dayjs) => void;
 }

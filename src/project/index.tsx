@@ -1,11 +1,11 @@
-import { getCalendarRows, now } from "./utils/helpers";
-import dayjs, { Dayjs } from "dayjs";
+import { changeDateMonth, getCalendarRows, now } from "./utils/helpers";
+import dayjs from "dayjs";
 import jalaliday from "jalaliday";
-import { ReactComponentElement, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { DatePickerComponent } from "./components/DatePickerComponent";
-import { DisabledDays, ICalendarCell } from "./utils/interfaces";
+import { DisabledDays } from "./utils/interfaces";
 import { CustomStyles } from "./utils/interfaces-styles";
-import { IDatePickerProps } from "./components/DatePickerComponent/DatePickerComponent-interfaces";
+import { IDatePickerPropsComponent } from "./components/DatePickerComponent/DatePickerComponent-interfaces";
 dayjs.extend(jalaliday);
 dayjs.locale("fa");
 
@@ -14,16 +14,24 @@ export interface IAppProps {
   min?: string;
   max?: string;
   customStyles?: CustomStyles;
-  Component?: React.FunctionComponent<IDatePickerProps>;
+  Component?: React.FunctionComponent<IDatePickerPropsComponent>;
+  closureDay?: Array<number> | [];
 }
 export const DatePicker: React.FC<IAppProps> = ({ Component, ...rest }) => {
   const [date, setDate] = useState(now());
   const [shownDate, setShownDate] = useState(date.clone());
-  const { notAvailableDays, min, max } = rest;
-  const rows = useMemo(
-    () => getCalendarRows({ shownDate, notAvailableDays, min, max }),
-    [shownDate]
+  const { notAvailableDays, min, max, closureDay } = rest;
+  const days = useMemo(
+    () =>
+      getCalendarRows({ shownDate, notAvailableDays, min, max, closureDay }),
+    [shownDate, notAvailableDays, min, max,closureDay]
   );
+
+  const trigger = (isNextMonth: boolean) => {
+    return () => {
+      setShownDate(changeDateMonth(shownDate, isNextMonth));
+    };
+  };
 
   return (
     <div className="app__container">
@@ -32,21 +40,15 @@ export const DatePicker: React.FC<IAppProps> = ({ Component, ...rest }) => {
           Picked Date: {date.format("YYYY - MM - DD")}
         </h4>
         {Component ? (
-          <Component
-            selectedDate={date}
-            onChange={setDate}
-            rows={rows}
-            shownDate={shownDate}
-            setShownDate={setShownDate}
-            {...rest}
-          />
+          <Component days={days} {...rest} trigger={trigger} />
         ) : (
           <DatePickerComponent
             selectedDate={date}
             onChange={setDate}
-            rows={rows}
+            days={days}
             shownDate={shownDate}
             setShownDate={setShownDate}
+            trigger={trigger}
             {...rest}
           />
         )}

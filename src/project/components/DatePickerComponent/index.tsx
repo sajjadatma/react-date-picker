@@ -12,7 +12,8 @@ export const DatePickerComponent: React.FC<IDatePickerProps> = ({
   onChange,
   shownDate,
   setShownDate,
-  rows,
+  days,
+  trigger,
   ...rest
 }) => {
   return (
@@ -21,6 +22,7 @@ export const DatePickerComponent: React.FC<IDatePickerProps> = ({
         shownDate={shownDate}
         selectorDateFormat={selectorDateFormat}
         setShownDate={setShownDate}
+        trigger={trigger}
         {...rest}
       />
 
@@ -28,7 +30,7 @@ export const DatePickerComponent: React.FC<IDatePickerProps> = ({
         selectedDate={selectedDate}
         shownDate={shownDate}
         onChange={onChange}
-        rows={rows}
+        days={days}
         {...rest}
       />
     </div>

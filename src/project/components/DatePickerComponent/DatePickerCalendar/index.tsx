@@ -2,15 +2,14 @@ import React, { useMemo } from "react";
 import { Dayjs } from "dayjs";
 import clsx from "clsx";
 
-import { getCalendarRows, daysOfWeek } from "../../../utils/helpers";
+import { daysOfWeek } from "../../../utils/helpers";
 import "./style.css";
 import { IDatePickerCalendarProps } from "./DatePickerCalendar-interfaces";
 
 export const DatePickerCalendar: React.FC<IDatePickerCalendarProps> = ({
   selectedDate,
   onChange,
-  rows,
-  ...rest
+  days,
 }) => {
   const handleSelectDate = (value: Dayjs) => {
     return () => onChange(value);
@@ -27,7 +26,7 @@ export const DatePickerCalendar: React.FC<IDatePickerCalendarProps> = ({
       </div>
 
       <div className={"DatePickerCalendar__row"}>
-        {rows.map((day, i) => (
+        {days.map((day, i) => (
           <div
             key={`${day.text} - ${i}`}
             className={clsx(
@@ -41,7 +40,8 @@ export const DatePickerCalendar: React.FC<IDatePickerCalendarProps> = ({
                 ),
               },
               {
-                DatePickerCalendar__isDisabled: day.isDisabled,
+                DatePickerCalendar__isDisabled:
+                  day.closureDay || day.isDisabled,
               },
               {
                 DatePickerCalendar__beforeAfter: !day.isInThisMonth,

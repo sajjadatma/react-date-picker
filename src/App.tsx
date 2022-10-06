@@ -1,7 +1,7 @@
 import "./App.css";
 import DatePicker from "./project/index";
 import { DisabledDays } from "./project/utils/interfaces";
-import FakeComponent from './fakeComponent'
+import FakeComponent from "./fakeComponent";
 function App() {
   const notAvailableDays: Array<DisabledDays> = [
     { disabledDate: "2022/09/05", description: "1st Holiday" },
@@ -18,11 +18,14 @@ function App() {
       fontSize: "20px",
     },
   };
+  const closureDay = [1];
   return (
     <div className="App">
       <DatePicker
-        notAvailableDays={notAvailableDays}
-        customStyles={customStyles}
+        // notAvailableDays={notAvailableDays}
+        // min={min}
+        // max={max}
+        // closureDay={closureDay}
         // Component={FakeComponent}
       />
     </div>

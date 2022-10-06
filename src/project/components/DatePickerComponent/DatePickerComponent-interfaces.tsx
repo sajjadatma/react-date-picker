@@ -10,6 +10,17 @@ export interface IDatePickerProps {
   customStyles?: CustomStyles;
   shownDate: Dayjs;
   setShownDate: React.Dispatch<React.SetStateAction<Dayjs>>;
-  rows: Array<ICalendarCell>;
+  days: Array<ICalendarCell>;
   onChange: (newDate: Dayjs) => void;
+  trigger: (isNextMonth: boolean) => () => void;
+}
+
+export interface IDatePickerPropsComponent {
+  notAvailableDays?: Array<DisabledDays>;
+  min?: string;
+  max?: string;
+  customStyles?: CustomStyles;
+  days: Array<ICalendarCell>;
+  closureDay?: Array<number>;
+  trigger: (isNextMonth: boolean) => void;
 }

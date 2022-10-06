@@ -5,20 +5,16 @@ import { changeDateMonth } from "../../../utils/helpers";
 
 import "./style.css";
 import clsx from "clsx";
-import { IDatePickerSelectorProps } from "../../../utils/interfaces";
+import { IDatePickerSelectorProps } from "./DatePickerSelector-interfaces";
 import { CustomStyles } from "../../../utils/interfaces-styles";
 
 export const DatePickerSelector: React.FC<IDatePickerSelectorProps> = ({
   shownDate,
   setShownDate,
+  trigger,
   ...rest
 }) => {
-  const { triggerTitle } = rest.customStyles as CustomStyles;
-  const handleIconClick = (isNextMonth: boolean) => {
-    return () => {
-      setShownDate(changeDateMonth(shownDate, isNextMonth));
-    };
-  };
+  // const { triggerTitle } = rest?.customStyles as CustomStyles;
 
   return (
     <div className={"DatePickerSelector"}>
@@ -27,15 +23,15 @@ export const DatePickerSelector: React.FC<IDatePickerSelectorProps> = ({
           "DatePickerSelector__icon",
           "DatePickerSelector__iconLeft"
         )}
-        onClick={handleIconClick(false)}
+        onClick={trigger(false)}
       >
         <ChevronDownIcon />
       </div>
 
       <div className={"DatePickerSelector__date"}>
-        <TriggerTitle {...triggerTitle}>
+        {/* <TriggerTitle {...triggerTitle}> */}
           {shownDate.format("MMMM YYYY")}
-        </TriggerTitle>
+        {/* </TriggerTitle> */}
       </div>
 
       <div
@@ -43,7 +39,7 @@ export const DatePickerSelector: React.FC<IDatePickerSelectorProps> = ({
           "DatePickerSelector__icon",
           "DatePickerSelector__iconRight"
         )}
-        onClick={handleIconClick(true)}
+        onClick={trigger(true)}
       >
         <ChevronDownIcon />
       </div>

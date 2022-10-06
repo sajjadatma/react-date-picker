@@ -10,6 +10,7 @@ export interface ICalendarCell {
   isDisabled: boolean;
   isInThisMonth: boolean;
   activate?: boolean;
+  closureDay?: boolean;
 }
 
 export interface FunctionParameters {
@@ -17,6 +18,7 @@ export interface FunctionParameters {
   notAvailableDays?: Array<DisabledDays>;
   min?: string;
   max?: string;
+  closureDay?: Array<number> | [];
 }
 export interface ResultOfStartDate {
   difference: number;
