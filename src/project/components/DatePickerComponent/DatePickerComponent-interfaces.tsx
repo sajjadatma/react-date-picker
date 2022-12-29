@@ -13,13 +13,13 @@ export interface IDatePickerProps {
   days: Array<ICalendarCell>;
   onChange: (newDate: Dayjs) => void;
   trigger: (isNextMonth: boolean) => () => void;
+  triggerFoPreviousYear: () => void;
 }
 
 export interface IDatePickerPropsComponent {
   notAvailableDays?: Array<DisabledDays>;
   min?: string;
   max?: string;
-  customStyles?: CustomStyles;
   days: Array<ICalendarCell>;
   closureDay?: Array<number>;
   trigger: (isNextMonth: boolean) => void;

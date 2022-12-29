@@ -10,10 +10,26 @@ import {
   ICalendarCell,
   ResultOfStartDate,
 } from "./interfaces";
+import { Dispatch, SetStateAction } from "react";
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 export const daysOfWeek = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+export const month = [
+  "فروردین",
+  "اردیبهشت",
+  "خرداد",
+  "تیر",
+  "مرداد",
+  "شهریور",
+  "مهر",
+  "آبان",
+  "آذر",
+  "دی",
+  "بهمن",
+  "اسفند",
+];
+
 export const now = (date?: string) =>
   dayjs(date).calendar("jalali").locale("fa");
 
@@ -27,6 +43,27 @@ export function changeDateMonth(date: Dayjs, isNextMonth: boolean): Dayjs {
   return date.add(isNextMonth ? 1 : -1, "month");
 }
 
+export function triggerFoNextYear(date: Dayjs): Dayjs {
+  return date.set("year", date.year() + 1);
+}
+
+export function triggerForSetMonthAndYear(
+  date: Dayjs,
+  setShownDate: Dispatch<SetStateAction<Dayjs>>,
+  month: number = date.month() + 1,
+  year: number = date.year()
+): void {
+  const newDate = date.set("month", month - 1).set("year", year);
+  setShownDate(newDate);
+}
+
+export function triggerFoPreviousYear(
+  date: Dayjs,
+  setShownDate: React.FC<Dayjs>
+): void {
+  const newDate = date.subtract(1, "year");
+  setShownDate(newDate);
+}
 export function checkDaysIsInMonth(dayConstant: Dayjs, date: Dayjs) {
   if (date.isBefore(dayConstant, "month")) return false;
   if (date.isAfter(dayConstant, "month")) return false;
@@ -90,8 +127,6 @@ export function getCalendarRows(
   if (min && typeof min === "string") {
     days = disableDaysBeforeThisDate(days, min);
   }
-  console.log(days);
-
   return days;
 }
 
