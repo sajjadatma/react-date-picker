@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./styles.css";
 import { ICalendarCell } from "../../utils/interfaces";
 import { ChevronDownIcon } from "../../icons/index";
@@ -12,10 +12,8 @@ type Props = {
   trigger?: any;
   triggerForSetMonthAndYear: any;
   month: Array<string>;
-  setDateState: any;
   triggerFoChangeYear: any;
 };
-
 const DatePickerComponent = (props: Props) => {
   const {
     daysOfWeek,
@@ -29,15 +27,14 @@ const DatePickerComponent = (props: Props) => {
     triggerFoChangeYear,
   } = props;
 
-  const [selectedMonth, setSelectedMonth] = useState(dateState.month());
   const monthOnChange = (e: string) => {
     setSelectedMonth(+e);
     triggerForSetMonthAndYear({ month: +e });
   };
+  const [selectedMonth, setSelectedMonth] = React.useState(dateState.month());
   return (
     <div className="DatePickerCalendar__main DatePickerCalendar__main__custom">
       <div className="trigger_icon__year">
-        {" "}
         <button
           className="trigger_icon__nextyear"
           onClick={() => triggerFoChangeYear(false)}
