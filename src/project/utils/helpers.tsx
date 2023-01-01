@@ -43,27 +43,34 @@ export function changeDateMonth(date: Dayjs, isNextMonth: boolean): Dayjs {
   return date.add(isNextMonth ? 1 : -1, "month");
 }
 
-export function triggerFoNextYear(date: Dayjs): Dayjs {
-  return date.set("year", date.year() + 1);
-}
-
-export function triggerForSetMonthAndYear(
+export function triggerFoChangeYear(
   date: Dayjs,
-  setShownDate: Dispatch<SetStateAction<Dayjs>>,
-  month: number = date.month() + 1,
-  year: number = date.year()
+  setDateState: Dispatch<SetStateAction<Dayjs>>,
+  trigger: boolean
 ): void {
-  const newDate = date.set("month", month - 1).set("year", year);
-  setShownDate(newDate);
+  const newDate = date.set(
+    "year",
+    trigger === true ? date.year() + 1 : date.year() - 1
+  );
+  setDateState(newDate);
 }
-
 export function triggerFoPreviousYear(
   date: Dayjs,
-  setShownDate: React.FC<Dayjs>
+  setDateState: React.FC<Dayjs>
 ): void {
   const newDate = date.subtract(1, "year");
-  setShownDate(newDate);
+  setDateState(newDate);
 }
+export function triggerForSetMonthAndYear(
+  date: Dayjs,
+  setDateState: Dispatch<SetStateAction<Dayjs>>,
+  month: number = date.month(),
+  year: number = date.year()
+): void {
+  const newDate = date.set("month", month).set("year", year);
+  setDateState(newDate);
+}
+
 export function checkDaysIsInMonth(dayConstant: Dayjs, date: Dayjs) {
   if (date.isBefore(dayConstant, "month")) return false;
   if (date.isAfter(dayConstant, "month")) return false;
@@ -98,10 +105,10 @@ const prepareCell = (
 export function getCalendarRows(
   newConstants: FunctionParameters
 ): Array<ICalendarCell> {
-  const { shownDate, max, min, notAvailableDays, closureDay } = newConstants;
+  const { dateState, max, min, holidays, closureDay } = newConstants;
 
   let days: Array<ICalendarCell> = [];
-  const startDayTrigger = startDate(shownDate, false);
+  const startDayTrigger = startDate(dateState, false);
   const { difference, firstDay } = startDayTrigger;
   let firstDayOfRow = firstDay;
   for (let i = 0; i <= difference; i++) {
@@ -110,15 +117,15 @@ export function getCalendarRows(
         firstDayOfRow,
         +firstDayOfRow.format("D"),
         false,
-        shownDate,
+        dateState,
         closureDay
       )
     );
     firstDayOfRow = firstDayOfRow.add(1, "day");
   }
 
-  if (notAvailableDays && notAvailableDays.length > 0) {
-    days = addNotActivatedDate(days, notAvailableDays);
+  if (holidays && holidays.length > 0) {
+    days = addNotActivatedDate(days, holidays);
   }
 
   if (max && typeof max === "string") {
@@ -132,11 +139,11 @@ export function getCalendarRows(
 
 export const addNotActivatedDate = (
   days: ICalendarCell[],
-  notAvailableDays: Array<DisabledDays>
+  holidays: Array<DisabledDays>
 ) => {
   const newDays = days.map((obj) => ({
     ...obj,
-    isDisabled: notAvailableDays.some((item) =>
+    isDisabled: holidays.some((item) =>
       dayjs(item.disabledDate).isSame(obj.value, "day")
     ),
   }));

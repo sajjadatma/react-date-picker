@@ -14,8 +14,8 @@ export interface ICalendarCell {
 }
 
 export interface FunctionParameters {
-  shownDate: Dayjs;
-  notAvailableDays?: Array<DisabledDays>;
+  dateState: Dayjs;
+  holidays?: Array<DisabledDays>;
   min?: string;
   max?: string;
   closureDay?: Array<number> | [];

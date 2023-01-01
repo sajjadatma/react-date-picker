@@ -3,7 +3,7 @@ import DatePicker from "./project/index";
 import { DisabledDays } from "./project/utils/interfaces";
 import FakeComponent from "./fakeComponent";
 function App() {
-  const notAvailableDays: Array<DisabledDays> = [
+  const holidays: Array<DisabledDays> = [
     { disabledDate: "2023/01/05", description: "1st Holiday" },
     { disabledDate: "2023-01-10", description: "2nd Holiday" },
     { disabledDate: "2023-01-15", description: "3th Holiday" },
@@ -19,15 +19,21 @@ function App() {
     },
   };
   const closureDay = [1, 5];
+  const getDate = (date: object) => {
+    console.log(date);
+  };
   return (
     <div className="App">
-      <DatePicker
-        // notAvailableDays={notAvailableDays}
-        // min={min}
-        // max={max}
-        closureDay={closureDay}
-        Component={FakeComponent}
-      />
+      <div>
+        <DatePicker
+          getDate={getDate}
+          // holidays={holidays}
+          // min={min}
+          // max={max}
+          // closureDay={closureDay}
+          // component={FakeComponent}
+        />
+      </div>
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import {
   changeDateMonth,
-  triggerFoPreviousYear,
-  triggerFoNextYear,
+  triggerFoChangeYear,
   getCalendarRows,
   now,
   daysOfWeek,
@@ -11,32 +10,42 @@ import {
 import dayjs, { Dayjs } from "dayjs";
 import jalaliday from "jalaliday";
 import { useMemo, useState } from "react";
-import { DatePickerComponent } from "./components/DatePickerComponent";
+import DatePickerComponent from "./components/DatePickerComponent/index";
 import { DisabledDays } from "./utils/interfaces";
-import { IDatePickerPropsComponent } from "./components/DatePickerComponent/DatePickerComponent-interfaces";
 dayjs.extend(jalaliday);
 dayjs.locale("fa");
 
+type getDataProps = {
+  selected_month?: number;
+  selected_day?: number;
+  selected_year?: number;
+  state_month?: number;
+  state_day?: number;
+  state_year?: number;
+  state_date?: any;
+  selected_date?: any;
+};
 export interface IAppProps {
-  notAvailableDays?: Array<DisabledDays>;
+  holidays?: Array<DisabledDays>;
   min?: string;
   max?: string;
-  Component?: React.FunctionComponent<IDatePickerPropsComponent>;
+  component?: React.FunctionComponent<any>;
   closureDay?: Array<number> | [];
+  getDate: (t: getDataProps) => void;
 }
-export const DatePicker: React.FC<IAppProps> = ({ Component, ...rest }) => {
+export const DatePicker: React.FC<IAppProps> = ({ component, ...rest }) => {
+  const Component = component;
   const [date, setDate] = useState(now());
-  const [shownDate, setShownDate] = useState(date.clone());
-  const { notAvailableDays, min, max, closureDay } = rest;
+  const [dateState, setDateState] = useState(date.clone());
+  const { holidays, min, max, closureDay } = rest;
   const days = useMemo(
-    () =>
-      getCalendarRows({ shownDate, notAvailableDays, min, max, closureDay }),
-    [shownDate, notAvailableDays, min, max, closureDay]
+    () => getCalendarRows({ dateState, holidays, min, max, closureDay }),
+    [dateState, holidays, min, max, closureDay]
   );
 
   const trigger = (isNextMonth: boolean) => {
     return () => {
-      setShownDate(changeDateMonth(shownDate, isNextMonth));
+      setDateState(changeDateMonth(dateState, isNextMonth));
     };
   };
   type SetMonthAndYearFunc = {
@@ -44,55 +53,74 @@ export const DatePicker: React.FC<IAppProps> = ({ Component, ...rest }) => {
     year?: number;
   };
   const triggerForSetMonthAndYearFunc = (params: SetMonthAndYearFunc) => {
-    return () => {
-      triggerForSetMonthAndYear(
-        shownDate,
-        setShownDate,
-        params.month,
-        params.year
-      );
-    };
+    triggerForSetMonthAndYear(
+      dateState,
+      setDateState,
+      params.month,
+      params.year
+    );
   };
   const handleSelectDate = (value: Dayjs) => {
     return () => setDate(value);
   };
+  const triggerFoNextYearFunc = (yearTrigger: boolean) => {
+    return triggerFoChangeYear(dateState, setDateState, yearTrigger);
+  };
 
+  useMemo(() => {
+    const selected_date = date;
+    const state_date = dateState;
+    const selected_month = date.month();
+    const selected_year = date.year();
+    const selected_day = date.date();
+    const state_day = dateState.date();
+    const state_year = dateState.year();
+    const state_month = dateState.month();
+
+    rest.getDate &&
+      rest.getDate({
+        selected_date,
+        state_date,
+        selected_month,
+        selected_year,
+        selected_day,
+        state_day,
+        state_year,
+        state_month,
+      });
+  }, [date, dateState]);
   return (
-    <div className="app__container">
-      <div className="app">
-        <h4 className="app__title">
-          Picked Date: {date.format("YYYY - MM - DD")}
-        </h4>
-        {Component ? (
-          <Component
-            selectedDate={date}
-            handleSelectDate={handleSelectDate}
-            days={days}
-            shownDate={shownDate}
-            setShownDate={setShownDate}
-            trigger={trigger}
-            triggerFoNextYear={triggerFoNextYear}
-            triggerFoPreviousYear={triggerFoPreviousYear}
-            daysOfWeek={daysOfWeek}
-            month={month}
-            triggerForSetMonthAndYear={triggerForSetMonthAndYearFunc}
-            {...rest}
-          />
-        ) : (
-          <DatePickerComponent
-            selectedDate={date}
-            onChange={setDate}
-            days={days}
-            shownDate={shownDate}
-            setShownDate={setShownDate}
-            trigger={trigger}
-            triggerFoNextYear={triggerFoNextYear}
-            triggerFoPreviousYear={triggerFoPreviousYear}
-            {...rest}
-          />
-        )}
-      </div>
-    </div>
+    <>
+      {Component ? (
+        <Component
+          selectedDate={date}
+          handleSelectDate={handleSelectDate}
+          days={days}
+          dateState={dateState}
+          setDateState={setDateState}
+          trigger={trigger}
+          triggerFoChangeYear={triggerFoNextYearFunc}
+          daysOfWeek={daysOfWeek}
+          month={month}
+          triggerForSetMonthAndYear={triggerForSetMonthAndYearFunc}
+          {...rest}
+        />
+      ) : (
+        <DatePickerComponent
+          selectedDate={date}
+          handleSelectDate={handleSelectDate}
+          days={days}
+          dateState={dateState}
+          setDateState={setDateState}
+          trigger={trigger}
+          triggerFoChangeYear={triggerFoNextYearFunc}
+          daysOfWeek={daysOfWeek}
+          month={month}
+          triggerForSetMonthAndYear={triggerForSetMonthAndYearFunc}
+          {...rest}
+        />
+      )}
+    </>
   );
 };
 
